@@ -18,12 +18,24 @@
     <ClCompile Include="stl_jmm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jmm_allocator.h">
+    <ClCompile Include="jmm_stl_allocator.h">
       <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="jmm_stl_iterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmm_stl_list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmm_stl_alloc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmm__type_traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmm_stl_construct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
