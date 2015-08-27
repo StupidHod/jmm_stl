@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "STL_JMM", "STL_JMM\STL_JMM.vcxproj", "{96BFFF12-1E1A-4158-8020-C0E23D721A47}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{96BFFF12-1E1A-4158-8020-C0E23D721A47}.Debug|Win32.ActiveCfg = Debug|Win32
+		{96BFFF12-1E1A-4158-8020-C0E23D721A47}.Debug|Win32.Build.0 = Debug|Win32
+		{96BFFF12-1E1A-4158-8020-C0E23D721A47}.Release|Win32.ActiveCfg = Release|Win32
+		{96BFFF12-1E1A-4158-8020-C0E23D721A47}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
