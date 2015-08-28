@@ -8,7 +8,7 @@
 #include <iostream>
 
 
-namespace jmm_stl
+namespace JMM_STL
 {
 	template <typename T>
 	inline T* _allocate(ptrdiff_t size, T*){

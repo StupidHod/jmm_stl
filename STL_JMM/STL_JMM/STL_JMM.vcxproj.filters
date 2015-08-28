@@ -38,5 +38,11 @@
     <ClInclude Include="jmm_stl_construct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="stl_jmm_uninitialized.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmm_memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

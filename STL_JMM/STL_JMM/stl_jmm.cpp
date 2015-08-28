@@ -3,6 +3,7 @@
 #include "jmm_stl_allocator.h"
 #include <vector>
 #include "jmm_stl_iterator.h"
+#include "jmm_stl_list.h"
 
 
 using namespace std;

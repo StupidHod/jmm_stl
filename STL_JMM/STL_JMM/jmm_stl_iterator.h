@@ -1,4 +1,7 @@
-namespace jmm_stl
+#ifndef JMM_STL_ITERATOR
+#define JMM_STL_ITERATOR
+
+namespace JMM_STL
 {
 
 
@@ -174,3 +177,5 @@ namespace jmm_stl
 	}
 
 }
+
+#endif

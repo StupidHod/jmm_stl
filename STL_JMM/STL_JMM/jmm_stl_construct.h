@@ -1,11 +1,13 @@
 #ifndef JMM_STL_CONSTRUCT
 #define JMM_STL_CONSTRUCT
 
-namespace jmm_stl
-{
 #include "jmm__type_traits.h"
 
 #include <new>
+
+namespace JMM_STL
+{
+
 
 	template <class T1, class T2>
 	inline void construct(T1 *p, const T2& value)
@@ -36,7 +38,7 @@ namespace jmm_stl
 	template <class ForwardIterator, class T>
 	inline void __destroy(ForwardIterator first, ForwardIterator last, T*)
 	{
-		typedef typename __type_traits<T>::has_trivial_destrator trivial_destructor);
+		typedef typename __type_traits<T>::has_trivial_destructor trivial_destructor;
 		__destroy(first, last, trivial_destructor());
 	}
 

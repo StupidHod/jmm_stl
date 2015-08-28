@@ -68,11 +68,13 @@
     <ClCompile Include="stl_jmm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="jmm_memory.h" />
     <ClInclude Include="jmm_stl_alloc.h" />
     <ClInclude Include="jmm_stl_construct.h" />
     <ClInclude Include="jmm_stl_iterator.h" />
     <ClInclude Include="jmm_stl_list.h" />
     <ClInclude Include="jmm__type_traits.h" />
+    <ClInclude Include="stl_jmm_uninitialized.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
