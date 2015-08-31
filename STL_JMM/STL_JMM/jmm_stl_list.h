@@ -327,7 +327,7 @@ namespace JMM_STL
 			}
 		
 		}
-	
+		/*
 		void sort()
 		{
 		
@@ -358,7 +358,7 @@ namespace JMM_STL
 			}
 		
 		
-		}
+		}*/
 
 	};
 

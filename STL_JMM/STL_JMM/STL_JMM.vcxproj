@@ -69,8 +69,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="jmm_memory.h" />
+    <ClInclude Include="jmm_stl_algobase.h" />
     <ClInclude Include="jmm_stl_alloc.h" />
     <ClInclude Include="jmm_stl_construct.h" />
+    <ClInclude Include="jmm_stl_deque.h" />
     <ClInclude Include="jmm_stl_iterator.h" />
     <ClInclude Include="jmm_stl_list.h" />
     <ClInclude Include="jmm__type_traits.h" />

@@ -44,5 +44,11 @@
     <ClInclude Include="jmm_memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jmm_stl_deque.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmm_stl_algobase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
