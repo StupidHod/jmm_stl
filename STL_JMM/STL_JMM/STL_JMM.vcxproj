@@ -73,8 +73,12 @@
     <ClInclude Include="jmm_stl_alloc.h" />
     <ClInclude Include="jmm_stl_construct.h" />
     <ClInclude Include="jmm_stl_deque.h" />
+    <ClInclude Include="jmm_stl_heap.h" />
     <ClInclude Include="jmm_stl_iterator.h" />
     <ClInclude Include="jmm_stl_list.h" />
+    <ClInclude Include="jmm_stl_queue.h" />
+    <ClInclude Include="jmm_stl_stack.h" />
+    <ClInclude Include="jmm_stl_vector.h" />
     <ClInclude Include="jmm__type_traits.h" />
     <ClInclude Include="stl_jmm_uninitialized.h" />
   </ItemGroup>

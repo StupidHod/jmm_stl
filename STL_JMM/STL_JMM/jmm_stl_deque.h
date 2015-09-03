@@ -3,7 +3,7 @@
 
 #include "jmm_memory.h"
 #include "jmm_stl_iterator.h"
-
+#include "jmm_stl_algobase.h"
 
 
 namespace JMM_STL
@@ -238,7 +238,7 @@ namespace JMM_STL
 		size_type map_size;
 		iterator start;
 		iterator finish;
-		map_pointer map;
+	//	map_pointer map;
 
 
 	protected:
@@ -331,7 +331,7 @@ namespace JMM_STL
 		
 		}
 
-		void
+
 
 		void create_map_and_nodes(size_type num_elements)
 		{
@@ -409,15 +409,279 @@ namespace JMM_STL
 			value_type t_copy = t;
 			reverse_map_at_back();
 			*(finish.node + 1) = allocate_node();
-			construct(finish.cur, t_copy);
-			finish.set_node(finish.node + 1);
-			finish.cur = finish.first;
+
+			try
+			{
+
+				construct(finish.cur, t_copy);
+				finish.set_node(finish.node + 1);
+				finish.cur = finish.first;
+
+			}
+			catch (...)
+			{
+				deallocate_node(*(finish.node + 1));
+			}
 		}
 
 
+		void push_front(const value_type& t)
+		{
+		
+			if (start.cur != start.first)
+			{
+				construct(start.cur - 1, t);
+				--start.cur;
+			}
+			else
+			{
+				push_front_aux(t);
+			}
+		
+		
+		
+		}
 
 
+		void push_front_aux(const value_type& t)
+		{
+		
+			value_type t_copy = t;
+			reverse_map_at_front();
+			*(start.node - 1) = allocate_node();
+			try
+			{
+				start.set_node(start.node - 1);
+				start.cur = start.last - 1;
+				construct(start.cur, t_copy);
+			}
+			catch (...)
+			{
+				start.set_node(start.node + 1);
+				start.cur = start.first;
+				deallocate_node(*(start.node - 1));
+				throw;
+			
+			
+			}
+		
+		}
+		
 
+		void pop_back()
+		{
+		
+			if (!finish.cur != finish.first)
+			{
+				--finish.cur;
+				destroy(finish.cur);
+			}
+			else
+			{
+				pop_back_aux();
+			}
+		
+		}
+
+
+		void pop_back_aux()
+		{
+		
+			deallocate_node(finish.first);
+			finish.set_node(finish.node - 1);
+			finish.cur = finish.last - 1;
+			destroy(finish.cur);
+		
+		}
+
+
+		void pop_front()
+		{
+		
+			if (start.cur != start.first)
+			{
+				destroy(start.cur);
+
+				start.cur++;
+			}
+			else
+			{
+			}
+		
+		
+		
+		}
+
+
+		void pop_front_aux()
+		{
+		
+			destroy(start.cur);
+
+			deallocate_node(start.first);
+			start.set_node(start.node + 1);
+			start.cur = start.first;
+			
+		
+		
+		
+		}
+
+
+		void clear()
+		{
+		
+			for (map_pointer node = start.node + 1; node < finish.node; ++node)
+			{
+				destroy(*node, *node + buffer_size());
+			
+
+				data_allocater::deallocate(*node, buffer_size());
+			}
+
+
+			if (start.node != finish.node)
+			{
+				destroy(start.cur, start.last);
+				destroy(finish.first, finish.cur);
+
+				data_allocater::deallocate(finish.first, buffer_size());
+			}
+			else
+			{
+				destroy(start.cur, finish.cur);
+			}
+
+			finish = start;
+		
+		}
+
+		iterator erase(iterator pos)
+		{
+		
+			iterator next = pos;
+			++next;
+			difference_type index = pos - start;
+			if (index < (size() >> 1))
+			{
+				copy_backward(start, pos, next);
+				pop_front();
+			}
+			else
+			{
+				copy(next, finish, pos);
+				pop_back();
+			}
+
+			return start + index;
+		
+		}
+
+
+		iterator erase(iterator first, iterator last)
+		{
+		
+			if (first == start && last == finish)
+			{
+				clear();
+				return start;
+			}
+			else
+			{
+				difference_type n = last - first;
+				difference_type elems_before = first - start;
+				if (elems_before < (size() - n) / 2)
+				{
+					copy_backward(start, first, last);
+					iterator new_start = start + n;
+					destroy(start, new_start);
+
+					for (map_pointer cur = start.node; cur < new_start.node; ++cur)
+					{
+						data_allocater::deallocate(*cur, buffer_size());
+					}
+
+					start = new_start;
+				}
+				else
+				{
+					copy(last, finish, first);
+					iterator new_finish = finish - n;
+					destroy(new_finish, finish);
+					for (map_pointer cur = new_finish.node + 1; cur <= finish.node; ++cur)
+					{
+						data_allocater::deallocate(*cur, buffer_size());
+					}
+
+					finish = new_finish;
+				}
+
+				return start + elems_before;
+			}
+		
+		
+		
+		}
+
+
+		iterator insert(iterator position, const value_type& x)
+		{
+		
+			if (position.cur == start.cur)
+			{
+				push_front(x);
+				return start;
+			}
+			else if (position.cur == finish.cur)
+			{
+				push_back(x);
+				iterator tmp = finish;
+				--tmp;
+				return tmp;
+
+			}
+			else
+			{
+				return  insert_aux(position, x);
+			}
+		
+		
+		}
+
+
+		iterator insert_aux(iterator pos, const value_type&x)
+		{
+		
+			difference_type index = pos - start;
+			value_type x_copy = x;
+			if (index < size() / 2)
+			{
+				push_front(front()); 
+				iterator front1 = start;
+				++front1;
+				iterator front2 = front1;
+				++front2;
+				pos = start + index;
+				iterator pos1 = pos;
+				++pos1;
+				copy(front2, pos1, front1);
+			}
+			else
+			{
+				push_back(back());
+				iterator back1 = back;
+				--back1;
+				iterator back2 = back1;
+				--back2;
+				pos = start + index;
+				copy_backward(pos, back2, back1);
+			}
+
+			*pos = x_copy;
+			return pos;
+		
+		
+		}
 
 		void realllocate_map(size_type nodes_to_add, bool add_at_front)
 		{

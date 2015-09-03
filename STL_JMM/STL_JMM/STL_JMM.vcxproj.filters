@@ -50,5 +50,17 @@
     <ClInclude Include="jmm_stl_algobase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jmm_stl_stack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmm_stl_queue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmm_stl_heap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmm_stl_vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
