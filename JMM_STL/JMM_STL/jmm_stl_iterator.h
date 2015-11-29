@@ -16,7 +16,7 @@ namespace JMM_STL
 	class Pointer = T*, class Reference = T&>
 	struct iterator
 	{
-		typedef Category	interator_category;
+		typedef Category	iterator_category;
 		typedef T			value_type;
 		typedef Distance	difference_type;
 		typedef Pointer		pointer;
@@ -63,72 +63,72 @@ namespace JMM_STL
 
 
 	template<class InputIterator>
-	inline typename iterator_traits<InputIterator>::iteraor_catergory
+	inline typename iterator_traits<InputIterator>::iterator_catergory
 		iterator_category(InputIterator & i)
 	{
-			typedef typename iterator_traits<InputIterator>::iteraor_catergory category
+		typedef typename iterator_traits<InputIterator>::iterator_catergory category;
 
-				return catergory();
-		}
+		return catergory();
+	}
 
 	template <class Iterator>
 	inline typename iterator_traits<Iterator>::difference_type *
 		distance_type(const Iterator&)
 	{
-			return static_cast<typename iterator_traits<Iterator>::difference_type*>(0);
+		return static_cast<typename iterator_traits<Iterator>::difference_type*>(0);
 
-		}
+	}
 
 
 	template <class Iterator>
 	inline typename iterator_traits<Iterator>::value_type *
 		value_type(const Iterator&)
 	{
-			return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
+		return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
 
-		}
+	}
 
 
 	template <class InputIterator>
 	inline typename iterator_traits<InputIterator>::difference_type
 		__distance(InputIterator first, InputIterator last, input_iterator_tag)
 	{
-			iterator_traits<InputIterator>::difference_type n = 0;
-			while (first != last)
-			{
-				++first;
+		iterator_traits<InputIterator>::difference_type n = 0;
+		while (first != last)
+		{
+			++first;
 
-				++n;
-
-			}
-
-
-			return n;
+			++n;
 
 		}
+
+
+		return n;
+
+	}
 
 
 	template <class RandomAcessIterator>
 	inline typename iterator_traits<RandomAcessIterator>::difference_type
 		__distance(RandomAcessIterator first, RandomAcessIterator last, random_access_iterator_tag)
 	{
-			iterator_traits<RandomAcessIterator>::difference_type n = 0;
+		iterator_traits<RandomAcessIterator>::difference_type n = 0;
 
 
-			return last - first;
+		return last - first;
 
-		}
+	}
 
 
 	template <class InputIterator>
 	inline typename iterator_traits<InputIterator>::difference_type
 		distance(InputIterator first, InputIterator last)
 	{
-			typedef typename
-				iterator_traits<InputIterator>::interator_category category;
-			return __distance(first, last, category);
+		typedef typename
+			iterator_traits<InputIterator>::iterator_category category;
+		return __distance(first, last, category());
 
-		}
+	}
 
 
 	template <class InputIterator, class Distance>

@@ -2,7 +2,7 @@
 #define JMM_STL_ALLOC
 
 #include <iostream>
-#define __THROW_BAD_ALLOC cerr<<"out of memory"<<endl;exit(1)
+#define __THROW_BAD_ALLOC std::cerr<<"out of memory"<<std::endl;exit(1)
 
 
 namespace JMM_STL{

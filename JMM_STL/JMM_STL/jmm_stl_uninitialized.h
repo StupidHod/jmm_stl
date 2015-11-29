@@ -58,17 +58,18 @@ namespace JMM_STL
 	
 
 	template <class InputIterator, class ForwardIterator>
-	inline ForwardIterator __uninitialized_copy_aux(InputIterator first, InputIterator last, ForwardIterator result,
+	ForwardIterator __uninitialized_copy_aux(InputIterator first, InputIterator last, ForwardIterator result,
 		__false_type)
 	{
 		ForwardIterator cur = result;
 
 		for (; first != last;++first, ++cur)
 		{
-			construct(&*cur, first);
+			construct(&*cur, *first);
 
 		}
 	
+		return cur;
 	
 	}
 
@@ -144,7 +145,7 @@ namespace JMM_STL
 	
 	}
 
-
+	/*
 	template<class ForwardIterator, class T>
 	inline ForwardIterator uninitialized_copy(ForwardIterator first, ForwardIterator last, const T& x)
 	{
@@ -152,7 +153,7 @@ namespace JMM_STL
 		return __uninitialized_copy(first, last, x, value_type(T));
 	}
 
-
+	*/
 }
 
 

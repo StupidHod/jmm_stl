@@ -74,8 +74,7 @@ namespace JMM_STL
 		}
 
 		vector(const_iterator first, const_iterator last) {
-			size_type n = 0;
-			distance(first, last, n);
+			size_type n = distance(first, last);
 			start = allocate_and_copy(n, first, last);
 			finish = start + n;
 			end_of_storage = finish;
@@ -306,7 +305,7 @@ namespace JMM_STL
 					new_finish = uninitialized_fill_n(new_finish, n, x);
 					new_finish = uninitialized_copy(position, finish, new_finish);
 				}
-#         
+        
 				catch (...) {
 					destroy(new_start, new_finish);
 					data_allocator::deallocate(new_start, len);
