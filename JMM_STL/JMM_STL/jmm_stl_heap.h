@@ -234,7 +234,7 @@ namespace JMM_STL
 		Distance parent = (len - 2) / 2;
 		while (true)
 		{
-			__adjust_heap(first, parent + first, len, T(*(first + parent)), comp);
+			__adjust_heap(first, parent, len, T(*(first + parent)), comp);
 			if (parent == 0)
 			{
 				return;
