@@ -70,6 +70,7 @@
     <ClInclude Include="jmm_stl_allocator.h" />
     <ClInclude Include="jmm_stl_construct.h" />
     <ClInclude Include="jmm_stl_deque.h" />
+    <ClInclude Include="jmm_stl_function.h" />
     <ClInclude Include="jmm_stl_heap.h" />
     <ClInclude Include="jmm_stl_iterator.h" />
     <ClInclude Include="jmm_stl_list.h" />

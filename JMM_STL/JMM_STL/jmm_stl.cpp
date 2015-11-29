@@ -10,6 +10,7 @@
 #include <utility>
 #include <iostream>
 #include "jmm_stl_heap.h"
+#include "jmm_stl_queue.h"
 
 
 using namespace JMM_STL;
@@ -52,11 +53,23 @@ void test_vector_heap()
 
 }
 
+void test_priority_queue()
+{
+	int ia[9] = { 0, 1, 2, 3, 4, 8, 9, 3, 5 };
+	priority_queue<int> ipq(ia, ia + 9);
+	while (!ipq.empty())
+	{
+		std::cout << ipq.top() << "\t";
+		ipq.pop();
+	}
+}
+
 int main()
 {
 	int wait;
 
-	test_vector_heap();
-	
+	//test_vector_heap();
+	test_priority_queue();
+
 	std::cin >> wait;
 }

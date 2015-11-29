@@ -57,6 +57,9 @@
     <ClInclude Include="jmm_stl_vector.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="jmm_stl_function.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jmm_stl.cpp">
