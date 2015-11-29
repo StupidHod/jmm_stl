@@ -29,6 +29,12 @@ namespace JMM_STL{
 			return result;
 		}
 
+
+		static void deallocate(void *p)
+		{
+			free(p);
+		}
+
 		static void deallocate(void* p, size_t n)
 		{
 		

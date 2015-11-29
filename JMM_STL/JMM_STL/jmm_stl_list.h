@@ -1,5 +1,5 @@
-#ifndef JMM_STL_LIST
-#define JMM_STL_LIST
+#ifndef __JMM_STL_LIST
+#define __JMM_STL_LIST
 
 #include "jmm_stl_iterator.h"
 #include "jmm_memory.h"

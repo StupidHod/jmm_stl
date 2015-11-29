@@ -260,7 +260,7 @@ namespace JMM_STL
 		T* operator()(const T* first, const T* last, T* result)
 		{
 		
-			typedef typename __type_traits<T> has_trivial_assignment_operator t;
+			typedef typename __type_traits<T>::has_trivial_assignment_operator t;
 		
 			return __copy_t(first, last, result, t());
 		}

@@ -6,6 +6,7 @@
 #include "jmm_stl_type_traits.h"
 #include "jmm_stl_iterator.h"
 #include "jmm_stl_construct.h"
+#include "jmm_stl_algobase.h"
 
 namespace JMM_STL
 {
@@ -29,9 +30,9 @@ namespace JMM_STL
 	inline ForwardIterator __uninitialized_fill_n_aux(ForwardIterator first, size n, const T& x, __true_type)
 	{
 
-#pragma message("replace with fill_n")
-
-		return __uninitialized_fill_n_aux(first, n, x, __false_type());
+//#pragma message("replace with fill_n")
+		return fill_n(first, n, x);
+		//return __uninitialized_fill_n_aux(first, n, x, __false_type());
 
 	}
 
@@ -78,9 +79,9 @@ namespace JMM_STL
 		__true_type)
 	{
 		
-#pragma message("replace with [copy(first,last,result)] laster")
-
-		return __uninitialized_copy_aux(first, last, result, __false_type());
+//#pragma message("replace with [copy(first,last,result)] laster")
+		return copy(first, last, result);
+		//return __uninitialized_copy_aux(first, last, result, __false_type());
 
 	}
 

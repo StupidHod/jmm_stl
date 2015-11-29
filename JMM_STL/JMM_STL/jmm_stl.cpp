@@ -11,6 +11,7 @@
 #include <iostream>
 #include "jmm_stl_heap.h"
 #include "jmm_stl_queue.h"
+#include "jmm_stl_slist.h"
 
 
 using namespace JMM_STL;
@@ -64,12 +65,39 @@ void test_priority_queue()
 	}
 }
 
+void test_slist()
+{
+	int i;
+	slist<int> islist;
+	std::cout << "size=" << islist.size() << std::endl;
+	islist.push_front(9);
+	islist.push_front(1);
+	islist.push_front(2);
+	islist.push_front(3);
+	islist.push_front(4);
+	std::cout << "size=" << islist.size() << std::endl;
+
+	slist<int>::iterator ite = islist.begin();
+	slist<int>::iterator ite2 = islist.end();
+	for (; ite != ite2; ++ite)
+	{
+		std::cout << *ite << "\t";
+	}
+
+	std::cout << std::endl;
+
+	
+}
+
+
+
 int main()
 {
 	int wait;
 
 	//test_vector_heap();
-	test_priority_queue();
+	//test_priority_queue();
+	test_slist();
 
 	std::cin >> wait;
 }

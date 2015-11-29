@@ -75,6 +75,7 @@
     <ClInclude Include="jmm_stl_iterator.h" />
     <ClInclude Include="jmm_stl_list.h" />
     <ClInclude Include="jmm_stl_queue.h" />
+    <ClInclude Include="jmm_stl_slist.h" />
     <ClInclude Include="jmm_stl_stack.h" />
     <ClInclude Include="jmm_stl_type_traits.h" />
     <ClInclude Include="jmm_stl_uninitialized.h" />
