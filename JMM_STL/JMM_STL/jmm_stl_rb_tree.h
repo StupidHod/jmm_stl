@@ -7,6 +7,7 @@
 #include "jmm_stl_allocator.h"
 #include "jmm_stl_construct.h"
 #include "jmm_stl_uninitialized.h"
+#include "jmm_stl_pair.h"
 
 
 namespace JMM_STL
@@ -370,6 +371,16 @@ namespace JMM_STL
 			right_most() = header;
 		}
 
+		inline void __rb_tree_rebalance(__rb_tree_node_base* x, __rb_tree_node_base*& root)
+		{
+			x->color = __rb_tree_red;
+			while (x!=root && x->parent->color == __rb_tree_red)
+			{
+				if (x->parent == x->parent->parent->left)
+
+			}
+		}
+
 
 	public:
 
@@ -422,6 +433,7 @@ namespace JMM_STL
 
 
 	public:
+		pair<iterator, bool> insert_unique(const value_type& x);
 		iterator insert_equal(const value_type& x);
 	};
 
@@ -439,6 +451,90 @@ namespace JMM_STL
 		}
 
 		return __insert(x, v, v);
+	}
+
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator,bool>
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(const Value& x)
+	{
+		link_type y = header;
+		link_type x = root();
+		bool comp = true;
+
+		while (x!=0)
+		{
+			y = x;
+			comp = key_compare(KeyOfValue()(v), key(x));
+			x = comp ? left(x) : right(x);
+		}
+
+
+		iterator j = iterator(y);
+		if (comp)
+		{
+			if (j == begin())
+			{
+				return pair<iterator, bool>(__insert(x, y, v), true);
+			}
+			else
+			{
+				--j;
+			}
+		}
+
+		if (key_compare(key(j.node), KeyOfValue()(v)))
+		{
+			return pair < iterator, bool)(__insert(x, y, v), true);
+		}
+
+
+		return pair<iterator, bool>(j, false);
+	
+	
+	}
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__insert(base_ptr x__, base_ptr y__, const Value& v)
+	{
+		link_type x = (link_type)x__;
+		link_type y = (link_type)y__;
+		link_type z;
+
+
+		if (y == header || x != 0 || key_compare(KeyOfValue()(v), key(y)))
+		{
+			z = create_node(v);
+			left(y) = z;
+			if (y == header)
+			{
+				root() = z;
+				right_most = z;
+			}
+			else if (y == left_most())
+			{
+				left_most() = z;
+			}
+		}
+		else
+		{
+			z = create_node(v);
+			right(y) = z;
+			if (y == right_most())
+			{
+				right_most() = z;
+			}
+		}
+
+		parent(z) = y;
+		left(z) = 0;
+		right(z) = 0;
+
+		__rb_tree_rebalance(z, header->parent);
+		++node_count;
+		return iterator(z);
+
 	}
 
 

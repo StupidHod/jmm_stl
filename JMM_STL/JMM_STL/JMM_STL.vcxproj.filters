@@ -63,6 +63,12 @@
     <ClInclude Include="jmm_stl_slist.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="jmm_stl_rb_tree.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="jmm_stl_pair.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jmm_stl.cpp">
