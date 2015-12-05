@@ -13,6 +13,13 @@ namespace JMM_STL
 	};
 
 
+	template<class Arg, class Result>
+	struct unary_function
+	{
+		typedef Arg argument_type;
+		typedef Result result_type;
+	};
+
 	template<class T>
 	struct less:public binary_function<T,T,bool>
 	{
@@ -21,6 +28,15 @@ namespace JMM_STL
 			return x < y;
 		}
 
+	};
+
+	template<class T>
+	struct identity :public unary_function < T, T >
+	{
+		const T& operator()(const T& x) const
+		{
+			return x;
+		}
 	};
 }
 

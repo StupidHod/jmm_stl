@@ -12,6 +12,7 @@
 #include "jmm_stl_heap.h"
 #include "jmm_stl_queue.h"
 #include "jmm_stl_slist.h"
+#include "jmm_stl_rb_tree.h"
 
 
 using namespace JMM_STL;
@@ -89,6 +90,26 @@ void test_slist()
 	
 }
 
+void test_rb_tree()
+{
+	rb_tree<int, int, identity<int>, less<int>> itree;
+	std::cout << itree.size() << std::endl;
+	itree.insert_unique(10);
+	itree.insert_unique(7);
+	itree.insert_unique(8);
+
+	itree.insert_unique(15);
+	itree.insert_unique(5);
+	itree.insert_unique(6);
+
+
+	itree.insert_unique(11);
+	itree.insert_unique(13);
+	itree.insert_unique(12);
+	std::cout << itree.size() << std::endl;
+	outputIterator(itree.begin(), itree.end());
+}
+
 
 
 int main()
@@ -97,7 +118,8 @@ int main()
 
 	//test_vector_heap();
 	//test_priority_queue();
-	test_slist();
+	//test_slist();
+	test_rb_tree();
 
 	std::cin >> wait;
 }
