@@ -424,6 +424,28 @@ namespace JMM_STL
 			return header;
 		}
 
+
+		reverse_iterator rbegin()
+		{
+			return reverse_iterator(end());
+		}
+
+
+		const_reverse_iterator rbegin() const
+		{
+			return const_reverse_iterator(end());
+		}
+
+		reverse_iterator rend()
+		{
+			return reverse_iterator(begin());
+		}
+
+		const_reverse_iterator rend() const
+		{
+			return const_reverse_iterator(begin());
+		}
+
 		bool empty() const
 		{
 			return node_count == 0;
@@ -439,6 +461,13 @@ namespace JMM_STL
 			return size_type(-1);
 		}
 
+		void swap(rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& t)
+		{
+			JMM_STL::swap(header, t.header);
+			JMM_STL::swap(node_count, t.node_count);
+			JMM_STL::swap(key_compare, t.key_compare);
+		}
+
 
 	public:
 		pair<iterator, bool> insert_unique(const value_type& x);
@@ -452,6 +481,23 @@ namespace JMM_STL
 		template<class InputIterator>
 		void insert_equal(InputIterator first, InputIterator last);
 		
+
+		void erase(iterator position);
+		size_type erase(const key_type& x);
+		void erase(iterator first, iterator last);
+		void erase(const key_type* first, const key_type* last);
+		void clear()
+		{
+			if (node_count != 0)
+			{
+				__erase(root());
+				left_most() = header;
+				root() = 0;
+				right_most() = header;
+				node_count = 0;
+			
+			}
+		}
 		
 		iterator find(const Key& k);
 
@@ -470,7 +516,7 @@ namespace JMM_STL
 
 		}
 
-		return __insert(x, v, v);
+		return __insert(x, y, v);
 	}
 
 
@@ -674,6 +720,210 @@ namespace JMM_STL
 		__rb_tree_rebalance(z, header->parent);
 		++node_count;
 		return iterator(z);
+
+	}
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__erase(link_type x)
+	{
+		while (x!=0)
+		{
+			__erase(right(x));
+			link_type y = left(x);
+			destroy_node(x);
+			x = y;
+		}
+	}
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::erase(iterator first, iterator last)
+	{
+		if (first == begin() && last == end())
+		{
+			clear();
+		}
+		else
+		{
+			while (first!=last)
+			{
+				erase(first++);
+			}
+		}
+	}
+
+
+	// in the first section, replace the erase node with real erased position
+	// in the second section, rebalance the tree
+	inline __rb_tree_node_base*
+		__rb_tree_rebalance_for_erase(__rb_tree_node_base * z,
+		__rb_tree_node_base*& root,
+		__rb_tree_node_base*& leftmost,
+		__rb_tree_node_base*& rightmost)
+	{
+
+		//real erase node
+		__rb_tree_node_base* y = z;
+
+		//real erase node's children
+		__rb_tree_node_base* x = 0;
+		__rb_tree_node_base* x_parent = 0;
+
+
+		//to get the successor and its children of the node to erase
+		if (y->left == 0)
+		{
+			x = y->right;
+		}
+		else
+		{
+			if (y->right == 0)
+			{
+				x = y->left;
+			}
+			else
+			{
+				y = y->right;
+				while (y->left!=0)
+				{
+					y = y->left;
+
+				}
+				x = y->right;
+			}
+		}
+
+
+		
+		if (y != z)
+		{
+			//if z has two children, y is the least node in his right sub tree and x is the right children of y
+			//replace the position of y and z, z is the node to erase, y is the node be erased really
+
+			z->left->parent = y;
+			y->left = z->left;
+
+			//if y is not z's direct children, erase node y and replace it with x
+			if (y != z->right)
+			{
+				x_parent = y->parent;
+				if (x)
+				{
+					//x is the only children of y, if x is not null, replace x's parent from z to y
+					x->parent = y->parent;
+					y->parent->left = x;
+					y->right = z->right;
+					z->right->parent = y;
+				}
+			}
+			else
+			{ 
+				x_parent = y;
+			}
+
+
+			//replace z's position with y's node
+			if (root == z)
+			{
+				root = y;
+			}
+			else if (z->parent->left == z)
+			{
+				z->parent->left = y;
+			}
+			else
+			{
+				z->parent->right = y;
+			}
+
+			y->parent = z->parent;
+			JMM_STL::swap(y->color, z->color);
+			y = z;
+
+		}
+		else
+		{
+			//if the number of z'children are not more than one, 
+			//x is the right children of z if z's left children is null, or x is null
+			//replace z with x
+
+			x_parent = y->parent;
+			if (x)
+			{
+				x->parent = y->parent;
+			}
+
+			if (root = z)
+			{
+				root = x;
+			}
+			else
+			{
+				
+				// replace z's position with y's node
+				if (z->parent->left == z)
+				{
+					z->parent->left = x;
+				}
+				else
+				{
+					z->parent->right = x;
+				}
+
+				if (leftmost == z)
+				{
+					if (z->right == 0)
+					{
+						leftmost = z->parent;
+					}
+					else
+					{
+						leftmost = __rb_tree_node_base::minimum(x);
+					}
+				}
+
+				if (rightmost == z)
+				{
+					if (z->left == 0)
+					{
+						rightmost = z->parent;
+					}
+					else
+					{
+						rightmost = __rb_tree_node_base::maximum(x);
+					}
+				
+				}
+
+
+
+			}
+			
+		}
+
+		if (y->color != __rb_tree_red)
+		{
+			while (x!=root && (x == 0 || x->color == __rb_tree_black))
+			{
+				if (x == x_parent->left)
+				{
+					__rb_tree_node_base* w = x_parent->right;
+					if (w->color == __rb_tree_red)
+					{
+						w->color = __rb_tree_black;
+						x_parent->color = __rb_tree_red;
+						__rb_tree_rotate_left(x_parent, root);
+						w = x_parent->right;
+					}
+				}
+
+			}
+		}
+
+	}
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::erase(iterator position)
+	{
 
 	}
 

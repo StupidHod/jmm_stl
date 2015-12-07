@@ -207,8 +207,8 @@ namespace JMM_STL
 
 		iterator_type base() const { return current; }
 		reference operator*() const {
-			Iterator tmp = current;
-			return *--tmp;
+			//Iterator tmp = current;
+			return *current;
 		}
 
 		pointer operator->() const { return &(operator*()); }
