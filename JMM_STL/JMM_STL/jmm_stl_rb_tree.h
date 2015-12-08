@@ -500,8 +500,122 @@ namespace JMM_STL
 		}
 		
 		iterator find(const Key& k);
+		pair<iterator, iterator> equal_range(const key_type& x);
+		pair<const_iterator, const_iterator> equal_range(const key_type& x) const;
+		iterator lower_bound(const key_type& x);
+		const_iterator lower_bound(const key_type& x)const;
+		iterator upper_bound(const key_type& x);
+		const_iterator upper_bound(const key_type& x) const;
 
 	};
+
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::lower_bound(const Key& k)
+	{
+		link_type y = header;
+		link_type x = root();
+
+		while (x!=0)
+		{
+			if (!key_compare(key(x), k))
+			{
+				y = x, x = left(x);
+			}
+			else
+			{
+				x = right(x);
+			}
+		}
+
+		return iterator(y);
+	}
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::lower_bound(const Key& k) const
+	{
+		link_type y = header;
+		link_type x = root();
+
+		while (x != 0)
+		{
+			if (!key_compare(key(x), k))
+			{
+				y = x, x = left(x);
+			}
+			else
+			{
+				x = right(x);
+			}
+		}
+
+		return const_iterator(y);
+	}
+
+
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::upper_bound(const Key& k)
+	{
+		link_type y = header;
+		link_type x = root();
+
+		while (x != 0)
+		{
+			if (key_compare(k, key(x)))
+			{
+				y = x, x = left(x);
+			}
+			else
+			{
+				x = right(x);
+			}
+		}
+
+		return iterator(y);
+	}
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::lower_bound(const Key& k) const
+	{
+		link_type y = header;
+		link_type x = root();
+
+		while (x != 0)
+		{
+			if (key_compare(k, key(x)))
+			{
+				y = x, x = left(x);
+			}
+			else
+			{
+				x = right(x);
+			}
+		}
+
+		return const_iterator(y);
+	}
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator,
+		typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator>
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const Key& k)
+	{
+		return pair<iterator, iterator>(lower_bound(k), upper_bound(k));
+	}
+
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator,
+		typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator>
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const Key& k) const
+	{
+		return pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k));
+	}
 
 	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
@@ -796,7 +910,7 @@ namespace JMM_STL
 		
 		if (y != z)
 		{
-			//if z has two children, y is the least node in his right sub tree and x is the right children of y
+			//if z has two children, y is the next node of z and x is the right children of y, as y do not have left children
 			//replace the position of y and z, z is the node to erase, y is the node be erased really
 
 			z->left->parent = y;
@@ -902,11 +1016,16 @@ namespace JMM_STL
 
 		if (y->color != __rb_tree_red)
 		{
+			//if the color of x is red, erase it directly, no need to do anythibg
 			while (x!=root && (x == 0 || x->color == __rb_tree_black))
 			{
+				//if the color of x and y are all black
 				if (x == x_parent->left)
 				{
+					// w is y's brother
 					__rb_tree_node_base* w = x_parent->right;
+					
+					//if brother is red, LL rotate with node x_parent, set w with black, x_parent with red
 					if (w->color == __rb_tree_red)
 					{
 						w->color = __rb_tree_black;
@@ -914,17 +1033,117 @@ namespace JMM_STL
 						__rb_tree_rotate_left(x_parent, root);
 						w = x_parent->right;
 					}
+
+
+					// if w's children are all black, just set w's color with red 
+					if ((w->left == 0 || w->left->color == __rb_tree_black) &&
+						(w->right == 0 || w->right->color == __rb_tree_black))
+					{
+						w->color = __rb_tree_red;
+						x = x->parent;
+						x_parent = x_parent->parent;
+					}
+					else
+					{
+						//if w's children is 
+
+						// w's right children is red, set w's left children with black, rotate right for w
+						if (w->right == 0 || w->right->color == __rb_tree_black)
+						{
+							if (w->left)
+							{
+								w->left->color = __rb_tree_black;
+							}
+							w->color = __rb_tree_red;
+							__rb_tree_rotate_right(w, root);
+							w = x_parent->right;
+						}
+						w->color = x_parent->color;
+						x_parent->color = __rb_tree_black;
+						if (w->right)
+						{
+							w->right->color = __rb_tree_black;
+						}
+						__rb_tree_rotate_left(x_parent, root);
+						break;
+					}
+				}
+				else
+				{
+					__rb_tree_node_base* w = x->parent->left;
+					if (w->color == __rb_tree_red)
+					{
+						w->color = __rb_tree_black;
+						x_parent->color = __rb_tree_red;
+						__rb_tree_rotate_right(x_parent, root);
+						w = x->parent->left;
+					}
+					if ((w->right == 0 || w->right->color == __rb_tree_black) &&
+						(w->left == 0 || w->left->color == __rb_tree_black))
+					{
+						w->color = __rb_tree_red;
+						x = x_parent;
+						x_parent = x_parent->parent;
+					}
+					else
+					{
+						if (w->left == 0 || w->left->color == __rb_tree_black)
+						{
+							if (w->right)
+							{
+								w->right->color = __rb_tree_black;
+							}
+							w->color = __rb_tree_red;
+							__rb_tree_rotate_left(w, root);
+							w = x_parent->left;
+						}
+						w->color = x_parent->color;
+						x_parent->color = __rb_tree_black;
+						if (w->left)
+						{
+							w->left->color = __rb_tree_black;
+						}
+						__rb_tree_rotate_right(x_parent, root);
+						break;
+					}
+				}
+
+
+
+				if (x)
+				{
+					x->color = __rb_tree_black;
 				}
 
 			}
+
 		}
+
+		return y;
 
 	}
 
 	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 	void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::erase(iterator position)
 	{
+		link_type y = (link_type)__rb_tree_rebalance_for_erase(position.node,
+			header->parent,
+			header->left,
+			header->right);
 
+		destroy_node(y);
+		--node_count;
+	}
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type 
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::erase(const Key& x)
+	{
+		pair<iterator, iterator> p = equal_range(x);
+		size_type n = 0;
+		distance(p.first, p.second, n);
+		erase(p.first, p.second);
+		return n;
 	}
 
 	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>

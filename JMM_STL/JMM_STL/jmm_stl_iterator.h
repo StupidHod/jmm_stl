@@ -130,6 +130,14 @@ namespace JMM_STL
 
 	}
 
+	template <class InputIterator, class Distance>
+	inline void distance(InputIterator first, InputIterator last, Distance &n)
+	{
+		typedef typename iterator_traits<InputIterator>::iterator_category category;
+
+		n = __distance(first, last, category());
+	}
+
 
 	template <class InputIterator, class Distance>
 	inline void __advance(InputIterator& i, Distance n,
