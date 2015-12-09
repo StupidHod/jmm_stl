@@ -1,5 +1,3 @@
-
-
 #include "jmm_stl_allocator.h"
 
 #include "jmm_stl_iterator.h"
@@ -13,7 +11,7 @@
 #include "jmm_stl_queue.h"
 #include "jmm_stl_slist.h"
 #include "jmm_stl_rb_tree.h"
-
+#include "jmm_stl_set.h"
 
 using namespace JMM_STL;
 
@@ -111,6 +109,51 @@ void test_rb_tree()
 }
 
 
+void test_set()
+{
+	int ia[5] = { 0, 1, 2, 3, 4 };
+	set<int> iset(ia, ia + 5);
+	
+	std::cout << "size=" << iset.size() << std::endl;
+	std::cout << "3 count=" << iset.count(3) << std::endl;
+	outputIterator(iset.begin(), iset.end());
+
+	iset.insert(5);
+	std::cout << "size=" << iset.size() << std::endl;
+	std::cout << "3 count=" << iset.count(3) << std::endl;
+	outputIterator(iset.begin(), iset.end());
+	
+	iset.erase(1);
+	std::cout << "size=" << iset.size() << std::endl;
+	std::cout << "3 count=" << iset.count(3) << std::endl;
+	std::cout << "1 count=" << iset.count(3) << std::endl;
+
+	outputIterator(iset.begin(), iset.end());
+
+	
+	set<int>::iterator ite1 = iset.find(3);
+	if (ite1 != iset.end())
+	{
+		std::cout << "3 found!" << std::endl;
+	}
+	else
+	{
+		std::cout << "3 not found!" << std::endl;
+	}
+
+	ite1 = iset.find(1);
+
+	if (ite1 != iset.end())
+	{
+		std::cout << "1 found!" << std::endl;
+	}
+	else
+	{
+		std::cout << "1 not found!" << std::endl;
+	}
+}
+
+
 
 int main()
 {
@@ -119,7 +162,9 @@ int main()
 	//test_vector_heap();
 	//test_priority_queue();
 	//test_slist();
-	test_rb_tree();
+	//test_rb_tree();
+	test_set();
+
 
 	std::cin >> wait;
 }

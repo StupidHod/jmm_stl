@@ -165,7 +165,7 @@ namespace JMM_STL
 		self& operator++()
 		{
 			increment();
-			return this;
+			return *this;
 		}
 
 		self operator++(int)
@@ -204,6 +204,7 @@ namespace JMM_STL
 	};
 
 
+
 	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc=alloc>
 	class rb_tree
 	{
@@ -214,7 +215,7 @@ namespace JMM_STL
 		typedef simple_alloc<rb_tree_node, Alloc> rb_tree_node_allocator;
 		typedef __rb_tree_color_type color_type;
 
-	protected:
+	public:
 		typedef Key key_type;
 		typedef Value value_type;
 		typedef value_type* pointer;
@@ -371,8 +372,9 @@ namespace JMM_STL
 	public:
 		typedef __rb_tree_iterator<value_type, reference, pointer> iterator;
 		typedef __rb_tree_iterator<value_type, const_reference, const_pointer> const_iterator;
-		typedef reverse_iterator<iterator> reverse_iterator;
 		typedef reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef reverse_iterator<iterator> reverse_iterator;
+		
 
 	private:
 		iterator __insert(base_ptr x, base_ptr y, const value_type& v);
@@ -419,7 +421,18 @@ namespace JMM_STL
 			return left_most();
 		}
 
+
+		const_iterator begin() const
+		{
+			return left_most();
+		}
+
 		iterator end()
+		{
+			return header;
+		}
+
+		const_iterator end() const
 		{
 			return header;
 		}
@@ -500,6 +513,8 @@ namespace JMM_STL
 		}
 		
 		iterator find(const Key& k);
+		const_iterator find(const Key& k) const;
+		size_type count(const key_type& x) const;
 		pair<iterator, iterator> equal_range(const key_type& x);
 		pair<const_iterator, const_iterator> equal_range(const key_type& x) const;
 		iterator lower_bound(const key_type& x);
@@ -509,6 +524,22 @@ namespace JMM_STL
 
 	};
 
+
+	template< class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline bool operator==(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& x,
+		const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& y)
+	{
+		return x.size() == y.size() && equal(x.begin(), x.end(), y.begin(), y.end());
+	}
+
+
+
+	template< class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline bool operator<(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& x,
+		const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& y)
+	{
+		return lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+	}
 
 	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
@@ -580,7 +611,7 @@ namespace JMM_STL
 
 	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
-		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::lower_bound(const Key& k) const
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::upper_bound(const Key& k) const
 	{
 		link_type y = header;
 		link_type x = root();
@@ -615,6 +646,18 @@ namespace JMM_STL
 		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const Key& k) const
 	{
 		return pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k));
+	}
+
+
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::count(const key_type& k) const
+	{
+		pair<const_iterator, const_iterator> p = equal_range(k);
+		size_type n = 0;
+		distance(p.first, p.second, n);
+		return n;
+
 	}
 
 	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
@@ -674,6 +717,73 @@ namespace JMM_STL
 
 	}
 
+	inline void __rb_tree_rotate_left(__rb_tree_node_base* x, __rb_tree_node_base*& root)
+	{
+		__rb_tree_node_base* y = x->right;
+		x->right = y->left;
+		if (y->left != 0)
+		{
+			y->left->parent = x;
+		}
+
+		y->parent = x->parent;
+
+		if (x == root)
+		{
+			root = y;
+		}
+		else if (x == x->parent->left)
+		{
+			x->parent->left = y;
+		}
+		else
+		{
+			x->parent->right = y;
+		}
+
+		y->left = x;
+		x->parent = y;
+	}
+
+
+	inline void __rb_tree_rotate_right(__rb_tree_node_base* x,
+		__rb_tree_node_base*& root)
+	{
+		__rb_tree_node_base* y = x->left;
+
+
+		x->left = y->right;
+
+		if (y->right != 0)
+		{
+			y->right->parent = x;
+		}
+
+		y->parent = x->parent;
+
+		if (x == root)
+		{
+			root = y;
+		}
+		else if (x == x->parent->right)
+		{
+			x->parent->right = y;
+		}
+		else
+		{
+			x->parent->left = y;
+		}
+
+
+		y->right = x;
+
+		x->parent = y;
+
+
+
+
+	}
+
 	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
 		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(iterator position, const Value& v)
@@ -705,7 +815,7 @@ namespace JMM_STL
 			iterator before = position;
 			--before;
 			if (key_compare(key(before.node), KeyOfValue()(v))
-				&& key_compare(KeyOfValue()(v), key(position.node))
+				&& key_compare(KeyOfValue()(v), key(position.node)))
 			{
 				if (right(before.node) == 0)
 				{
@@ -755,7 +865,7 @@ namespace JMM_STL
 			iterator before = position;
 			--before;
 			if (!key_compare(key(before.node), KeyOfValue()(v))
-				&& !key_compare(KeyOfValue()(v), key(position.node))
+				&& !key_compare(KeyOfValue()(v), key(position.node)))
 			{
 				if (right(before.node) == 0)
 				{
@@ -924,10 +1034,12 @@ namespace JMM_STL
 				{
 					//x is the only children of y, if x is not null, replace x's parent from z to y
 					x->parent = y->parent;
-					y->parent->left = x;
-					y->right = z->right;
-					z->right->parent = y;
 				}
+
+				y->parent->left = x;
+				y->right = z->right;
+				z->right->parent = y;
+
 			}
 			else
 			{ 
@@ -966,13 +1078,13 @@ namespace JMM_STL
 				x->parent = y->parent;
 			}
 
-			if (root = z)
+			if (root == z)
 			{
 				root = x;
 			}
 			else
 			{
-				
+
 				// replace z's position with y's node
 				if (z->parent->left == z)
 				{
@@ -982,37 +1094,37 @@ namespace JMM_STL
 				{
 					z->parent->right = x;
 				}
+			}
 
-				if (leftmost == z)
+			if (leftmost == z)
+			{
+				if (z->right == 0)
 				{
-					if (z->right == 0)
-					{
-						leftmost = z->parent;
-					}
-					else
-					{
-						leftmost = __rb_tree_node_base::minimum(x);
-					}
+					leftmost = z->parent;
 				}
-
-				if (rightmost == z)
+				else
 				{
-					if (z->left == 0)
-					{
-						rightmost = z->parent;
-					}
-					else
-					{
-						rightmost = __rb_tree_node_base::maximum(x);
-					}
-				
+					leftmost = __rb_tree_node_base::minimum(x);
 				}
+			}
 
-
+			if (rightmost == z)
+			{
+				if (z->left == 0)
+				{
+					rightmost = z->parent;
+				}
+				else
+				{
+					rightmost = __rb_tree_node_base::maximum(x);
+				}
 
 			}
-			
+
+
+
 		}
+			
 
 		if (y->color != __rb_tree_red)
 		{
@@ -1070,7 +1182,7 @@ namespace JMM_STL
 				}
 				else
 				{
-					__rb_tree_node_base* w = x->parent->left;
+					__rb_tree_node_base* w = x_parent->left;
 					if (w->color == __rb_tree_red)
 					{
 						w->color = __rb_tree_black;
@@ -1170,70 +1282,31 @@ namespace JMM_STL
 		return (j == end() || key_compare(k, key(j.node))) ? end() : j;
 	}
 
-	inline void __rb_tree_rotate_left(__rb_tree_node_base* x, __rb_tree_node_base*& root)
+	template<class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const Key& k) const
 	{
-		__rb_tree_node_base* y = x->right;
-		x->right = y->left;
-		if (y->left != 0)
+		link_type y = header;
+		link_type x = root();
+
+		while (x != 0)
 		{
-			y->left->parent = x;
+			if (!key_compare(key(x), k))
+			{
+				y = x;
+				x = left(x);
+			}
+			else
+			{
+				x = right(x);
+			}
 		}
 
-		y->parent = x->parent;
-
-		if (x == root)
-		{
-			root = y;
-		}
-		else if (x == x->parent->left)
-		{
-			x->parent->left = y;
-		}
-		else
-		{
-			x->parent->right = y;
-		}
-
-		y->left = x;
-		x->parent = y;
+		const_iterator j = const_iterator(y);
+		return (j == end() || key_compare(k, key(j.node))) ? end() : j;
 	}
 
 
-	inline void __rb_tree_rotate_right(__rb_tree_node_base* x,
-		__rb_tree_node_base*& root)
-	{
-		__rb_tree_node_base* y = x->left;
-
-
-		x->left = y->right;
-
-		if (y->right != 0)
-		{
-			y->right->parent = x;
-		}
-
-		y->parent = x->parent;
-
-		if (x == root)
-		{
-			root = y;
-		}
-		else if (x == x->parent->right)
-		{
-			x->parent->right = y;
-		}
-		else
-		{
-			x->parent->left = y;
-		}
-
-		x->parent = y;
-
-		y->right = x;
-
-
-
-	}
 
 
 	inline void __rb_tree_rebalance(__rb_tree_node_base* x, __rb_tree_node_base*& root)
@@ -1269,7 +1342,7 @@ namespace JMM_STL
 				__rb_tree_node_base* y = x->parent->parent->left;
 				if (y&&y->color == __rb_tree_red)
 				{
-					x->parent->color == __rb_tree_black;
+					x->parent->color = __rb_tree_black;
 					y->color = __rb_tree_black;
 					x->parent->parent->color = __rb_tree_red;
 					x = x->parent->parent;

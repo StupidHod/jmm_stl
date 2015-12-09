@@ -128,7 +128,7 @@ namespace JMM_STL
 		typedef pair<iterator, bool> pair_iterator_bool;
 		pair<iterator, bool> insert(const value_type& x)
 		{
-			pair<typename rep_type::iterator, bool> p = t.insert_unique)(x);
+			pair<typename rep_type::iterator, bool> p = t.insert_unique(x);
 			return pair<iterator, bool>(p.first, p.second);
 		}
 
@@ -145,15 +145,78 @@ namespace JMM_STL
 			t.insert_unique(first, last);
 		}
 
+		void erase(iterator position)
+		{
+			typedef typename rep_type::iterator rep_iterator;
+			t.erase((rep_iterator&)position);
+		}
 
-		
+		size_type erase(const key_type& x)
+		{
+			return t.erase(x);
+		}
 
 
+		void erase(iterator first, iterator last)
+		{
+			typedef typename rep_type::iterator rep_iterator;
+			t.erase((rep_iterator&)first, (rep_iterator)last);
+		}
 
 
+		void clear()
+		{
+			t.clear();
+		}
 
+
+		iterator find(const key_type& x) const
+		{
+			return t.find(x);
+		}
+
+		size_type count(const key_type& x) const
+		{
+			return t.count(x);
+		}
+
+
+		iterator lower_bound(const key_type& x) const
+		{
+			return t.lower_bound(x);
+		}
+
+		iterator upper_bound(const key_type& x) const
+		{
+			return t.upper_bound(x);
+		}
+
+		pair<iterator, iterator> equal_range(const key_type& x)
+		{
+			return t.equal_range(x);
+		}
+
+		friend bool operator==(const set<Key, Compare, Alloc> &x,
+			const set<Key, Compare, Alloc> & y);
+
+
+		friend bool operator<(const set<Key, Compare, Alloc> &x,
+			const set<Key, Compare, Alloc> & y);
 
 	};
+
+
+	template <class Key, class Compare, class Alloc>
+	inline bool operator==(const set<Key, Compare, Alloc>& x, const set<Key, Compare, Alloc>& y)
+	{
+		return x.t == y.t;
+	}
+
+	template <class Key, class Compare, class Alloc>
+	inline bool operator<(const set<Key, Compare, Alloc>& x, const set<Key, Compare, Alloc>& y)
+	{
+		return x.t < y.t;
+	}
 
 }
 
