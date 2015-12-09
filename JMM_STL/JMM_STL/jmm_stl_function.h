@@ -38,6 +38,16 @@ namespace JMM_STL
 			return x;
 		}
 	};
+
+	template<class Pair>
+	struct select1st : public unary_function<Pair, typename Pair::first_type>
+	{
+		const typename Pair::first_type& operator()(const Pair& x) const
+		{
+			return x.first;
+		}
+		
+	};
 }
 
 #endif

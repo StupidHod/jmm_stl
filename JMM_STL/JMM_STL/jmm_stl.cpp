@@ -7,11 +7,13 @@
 #include "jmm_stl_vector.h"
 #include <utility>
 #include <iostream>
+#include <string>
 #include "jmm_stl_heap.h"
 #include "jmm_stl_queue.h"
 #include "jmm_stl_slist.h"
 #include "jmm_stl_rb_tree.h"
 #include "jmm_stl_set.h"
+#include "jmm_stl_map.h"
 
 using namespace JMM_STL;
 
@@ -153,6 +155,61 @@ void test_set()
 	}
 }
 
+void test_map()
+{
+	map<std::string, int> simap;
+	simap[std::string("jjhou")] = 1;
+	simap[std::string("jerry")] = 2;
+	simap[std::string("jason")] = 3;
+	simap[std::string("jjmmy")] = 4;
+
+	pair<std::string, int> value(std::string("david"), 5);
+	simap.insert(value);
+
+	std::cout << simap.size() << std::endl;
+
+	map<std::string, int>::iterator simap_iter = simap.begin();
+	for (; simap_iter != simap.end(); ++simap_iter)
+	{
+		std::cout<<simap_iter->first << "\t" << simap_iter->second << std::endl;
+	
+	}
+
+	int number = simap[std::string("jjhou")];
+	std::cout << number << std::endl;
+
+
+	map<std::string, int>::iterator ite1;
+	ite1 = simap.find(std::string("mchen"));
+	if (ite1 == simap.end())
+	{
+		std::cout << "mchen not found" << std::endl;
+	}
+	else
+	{
+		std::cout << "mchen found" << std::endl;
+	}
+
+	ite1 = simap.find(std::string("jerry"));
+	if (ite1 == simap.end())
+	{
+		std::cout << "jerry not found" << std::endl;
+	}
+	else
+	{
+		std::cout << "jerry found" << std::endl;
+	}
+
+	
+	int numer2 = simap[std::string("jerry")];
+	std::cout << numer2 << std::endl;
+
+	ite1->second = 9;
+	numer2 = simap[std::string("jerry")];
+	std::cout << numer2 << std::endl;
+
+	
+}
 
 
 int main()
@@ -163,8 +220,8 @@ int main()
 	//test_priority_queue();
 	//test_slist();
 	//test_rb_tree();
-	test_set();
-
+	//test_set();
+	test_map();
 
 	std::cin >> wait;
 }
