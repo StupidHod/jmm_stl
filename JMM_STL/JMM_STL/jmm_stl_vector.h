@@ -109,9 +109,9 @@ namespace JMM_STL
 				insert_aux(end(), x);
 		}
 		void swap(vector<T, Alloc>& x) {
-			swap(start, x.start);
-			swap(finish, x.finish);
-			swap(end_of_storage, x.end_of_storage);
+			JMM_STL::swap(start, x.start);
+			JMM_STL::swap(finish, x.finish);
+			JMM_STL::swap(end_of_storage, x.end_of_storage);
 		}
 		iterator insert(iterator position, const T& x) {
 			size_type n = position - begin();
@@ -168,11 +168,15 @@ namespace JMM_STL
 	protected:
 		iterator allocate_and_fill(size_type n, const T& x) {
 			iterator result = data_allocator::allocate(n);
-			__STL_TRY{
+			try
+			{
 				uninitialized_fill_n(result, n, x);
 				return result;
 			}
-			__STL_UNWIND(data_allocator::deallocate(result, n));
+			catch (...)
+			{
+				data_allocator::deallocate(result, n);
+			}
 		}
 
 

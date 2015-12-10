@@ -48,6 +48,17 @@ namespace JMM_STL
 		}
 		
 	};
+
+
+	template <class T>
+	struct equal_to :public binary_function < T, T, bool >
+	{
+		bool operator()(const T& x, const T& y) const
+		{
+			return x == y;
+		}
+
+	};
 }
 
 #endif

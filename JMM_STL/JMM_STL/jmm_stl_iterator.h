@@ -63,12 +63,12 @@ namespace JMM_STL
 
 
 	template<class InputIterator>
-	inline typename iterator_traits<InputIterator>::iterator_catergory
+	inline typename iterator_traits<InputIterator>::iterator_category
 		iterator_category(InputIterator & i)
 	{
-		typedef typename iterator_traits<InputIterator>::iterator_catergory category;
+		typedef typename iterator_traits<InputIterator>::iterator_category category;
 
-		return catergory();
+		return category();
 	}
 
 	template <class Iterator>

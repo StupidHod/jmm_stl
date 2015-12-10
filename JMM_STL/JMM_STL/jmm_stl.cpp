@@ -14,6 +14,8 @@
 #include "jmm_stl_rb_tree.h"
 #include "jmm_stl_set.h"
 #include "jmm_stl_map.h"
+#include "jmm_stl_hashtable.h"
+#include "jmm_stl_hash_fun.h"
 
 using namespace JMM_STL;
 
@@ -211,6 +213,64 @@ void test_map()
 	
 }
 
+void test_hashtable()
+{
+	hashtable<int, int, hash<int>, identity<int>, equal_to<int>, alloc> iht(50, hash<int>(), equal_to<int>());
+
+	std::cout << iht.size() << std::endl;
+	std::cout << iht.bucket_count() << std::endl;
+	std::cout << iht.max_bucket_count() << std::endl;
+
+
+	auto i = iht.begin();
+	//iterator_category(i);
+	
+	iht.insert_unique(59);
+	iht.insert_unique(63);
+	iht.insert_unique(108);
+	iht.insert_unique(2);
+	iht.insert_unique(53);
+	iht.insert_unique(55);
+
+	std::cout << iht.size() << std::endl;
+
+	auto ite = iht.begin();
+
+	outputIterator(iht.begin(), iht.end());
+
+	for (int i = 0; i < iht.bucket_count(); ++i)
+	{
+		int n = iht.elems_in_bucket(i);
+		if (n != 0)
+		{
+			std::cout << "bucket[" << i << "] has " << n << " elems." << std::endl;
+		}
+	}
+
+
+	for (int i = 0; i <= 47; ++i)
+	{
+		iht.insert_equal(i);
+	}
+
+	std::cout << iht.bucket_count() << std::endl;
+
+	for (int i = 0; i < iht.bucket_count(); ++i)
+	{
+		int n = iht.elems_in_bucket(i);
+		if (n != 0)
+		{
+			std::cout << "bucket[" << i << "] has " << n << " elems." << std::endl;
+		}
+	}
+
+	outputIterator(iht.begin(), iht.end());
+
+	std::cout << *(iht.find(2)) << std::endl;
+	std::cout << iht.count(2) << std::endl;
+	
+}
+
 
 int main()
 {
@@ -221,7 +281,8 @@ int main()
 	//test_slist();
 	//test_rb_tree();
 	//test_set();
-	test_map();
+	//test_map();
+	test_hashtable();
 
 	std::cin >> wait;
 }

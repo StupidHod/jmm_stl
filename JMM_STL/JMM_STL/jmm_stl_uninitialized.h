@@ -44,7 +44,7 @@ namespace JMM_STL
 	{
 		typedef typename __type_traits<T1>::is_POD_type is_POD;
 
-		return __uninitialized_fill_n_aux(fist, n, x, is_POD());
+		return __uninitialized_fill_n_aux(first, n, x, is_POD());
 		
 	}
 
@@ -53,7 +53,7 @@ namespace JMM_STL
 	template<class ForwardIterator, class size, class T>
 	inline ForwardIterator uninitialized_fill_n(ForwardIterator first, size n, const T& x)
 	{
-		return __uninitialized_fill_n(first, n, x, value_type(T));
+		return __uninitialized_fill_n(first, n, x, value_type(x));
 
 	}	
 	
