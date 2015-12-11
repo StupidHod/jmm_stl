@@ -227,6 +227,17 @@ namespace JMM_STL
 		typedef value_type& reference;
 		typedef const value_type& const_reference;
 
+		hasher hash_funct() const
+		{
+			return hasher;
+		}
+
+
+		key_equal key_eq() const
+		{
+			return equals;
+		}
+
 	private:
 		hasher hash;
 		key_equal equals;
@@ -241,6 +252,7 @@ namespace JMM_STL
 	public:
 
 		
+
 
 		typedef typename __hashtable_iterator<Value, Key, HashFun, ExtractKey, EqualKey, Alloc> iterator;
 		typedef typename __hashtable_const_iterator<Value, Key, HashFun, ExtractKey, EqualKey, Alloc> const_iterator;
@@ -261,6 +273,33 @@ namespace JMM_STL
 			initialize_buckets(n);
 			
 
+		}
+
+	public:
+
+		size_type size()
+		{
+			return num_elements;
+		}
+
+		size_type max_size()
+		{
+			return size_type(-1);
+		}
+
+		bool empty()
+		{
+			return num_elements == 0;
+		}
+
+		void swap(hashtable& ht)
+		{
+
+			JMM_STL::swap(ht.hash, hash);
+			JMM_STL::swap(ht.equals, equals);
+			JMM_STL::swap(ht.get_key, ht.get_key);
+			buckets.swap(ht.buckets);
+			JMM_STL::swap(ht.num_elements, num_elements);
 		}
 
 		iterator begin()
@@ -311,6 +350,12 @@ namespace JMM_STL
 		}
 
 
+	public:
+
+		pair<iterator, bool> insert_unqiue_noresize(const value_type& obj);
+
+		iterator insert_equal_noresize(const value_type& obj);
+
 		pair<iterator, bool> insert_unique(const value_type& obj)
 		{
 			resize(num_elements + 1);
@@ -324,10 +369,16 @@ namespace JMM_STL
 			return insert_equal_noresize(obj);
 		}
 
-		size_type size()
-		{
-			return num_elements;
-		}
+
+		size_type erase(const key_type& key) const;
+
+		void erase(const iterator& it);
+		void erase(iterator first, iterator last);
+
+		void erase(const const_iterator& it);
+		void erase(const_iterator first, const_iterator last);
+
+
 
 
 		size_type elems_in_bucket(size_type bucket) const
@@ -352,6 +403,8 @@ namespace JMM_STL
 			for (first = buckets[n]; first&&!equals(get_key(first->val), key); first = first->next){}
 			return iterator(first, this);
 		}
+
+		pair<iterator, iterator> equal_range(const key_type&);
 
 		const_iterator find(const key_type& key) const
 		{
@@ -415,8 +468,67 @@ namespace JMM_STL
 			num_elements = 0;
 		}
 
-		pair<iterator, bool> insert_unqiue_noresize(const value_type& obj);
-		iterator insert_equal_noresize(const value_type& obj);
+
+
+		template<class InputIterator>
+		void insert_unique(InputIterator first, InputIterator last)
+		{
+			insert_unique(first, last, iterator_category(first));
+		}
+
+
+		template<class InputIterator>
+		void insert_unique(InputIterator first, InputIterator last, input_iterator_tag)
+		{
+			for (; first != last; ++first)
+			{
+				insert_unique(*first);
+			}
+		}
+
+		template<class ForwardIterator>
+		void insert_unique(ForwardIterator first, ForwardIterator last, forward_iterator_tag)
+		{
+			size_type n = 0;
+			distance(first, last, n);
+			resize(num_elements + n);
+
+			for (; n>0; --n,++first)
+			{
+				insert_unqiue_noresize(*first);
+			}
+		}
+
+		template<class InputIterator>
+		void insert_equal(InputIterator first, InputIterator last)
+		{
+			insert_equal(first, last, iterator_category(first));
+		}
+
+
+		template<class InputIterator>
+		void insert_equal(InputIterator first, InputIterator last, input_iterator_tag)
+		{
+			for (; first != last; ++first)
+			{
+				insert_equal(*first);
+			}
+		}
+
+		template<class ForwardIterator>
+		void insert_equal(ForwardIterator first, ForwardIterator last, forward_iterator_tag)
+		{
+			size_type n = 0;
+			distance(first, last, n);
+			resize(num_elements + n);
+
+			for (; n>0; --n, ++first)
+			{
+				insert_equal_noresize(*first);
+			}
+		}
+
+
 
 		void resize(size_type num_elements_hint);
 
@@ -442,6 +554,11 @@ namespace JMM_STL
 			
 			return hash(key) % n;
 		}
+
+		void erase_bucket(const size_type n, node* first, node* last);
+		void erase_bucket(const size_type n, node* last);
+
+
 	};
 
 
@@ -547,6 +664,207 @@ namespace JMM_STL
 
 		num_elements = 0;
 	}
+
+	template <class V, class K, class HF, class Ex, class Eq, class A>
+	pair<typename hashtable<V, K, HF, Ex, Eq, A>::iterator, typename hashtable<V, K, HF, Ex, Eq, A>::iterator> 
+		hashtable<V, K, HF, Ex, Eq, A>::equal_range(const key_type&)
+	{
+		typedef pair<iterator, iterator> pii;
+		const size_type n = bkt_num_key(key);
+
+		for (node* first = buckets[n]; first; first == first->next)
+		{
+			if (equals(get_key(first->val), key))
+			{
+				for (node* cur = first->next; cur; cur = cur->next)
+				{
+					if (!equals(get_key(cur->val), key))
+					{
+						return pii(iterator(first, this), iterator(cur, this));
+					}
+				}
+
+				for (size_type m = n + 1; m < buckets.size(); ++m)
+				{
+					if (buckets[m])
+					{
+						return pii(iterator(first, this), iterator(buckets[m], this));
+					}
+				}
+
+				return pii(iterator(first, this), end());
+			}
+		
+		}
+
+		return pii(end(), end());
+	}
+
+	template <class V, class K, class HF, class Ex, class Eq, class A>
+	void hashtable<V, K, HF, Ex, Eq, A>::erase(const iterator& it)
+	{
+		if (node * const p = it.cur)
+		{
+			const size_type n = bkt_num(p->val);
+			node* cur = buckets[n];
+
+			if (cur == p)
+			{
+				buckets[n] = cur->next;
+				delete_node(p);
+				--num_elements;
+			}
+			else
+			{
+				node* next = cur->next;
+				while (next)
+				{
+					if (next == p)
+					{
+						cur->next = next->next;
+						delete_node(next);
+						--num_elements;
+						break;
+					}
+					else
+					{
+						cur = next;
+						next = cur->next;
+					}
+				}
+			}
+		}
+	}
+
+	template <class V, class K, class HF, class Ex, class Eq, class A>
+	void hashtable<V, K, HF, Ex, Eq, A>::erase_bucket(const size_type n, node* first, node* last)
+	{
+		node* cur = buckets[n];
+		if (cur == first)
+			erase_bucket(n, last);
+		else
+		{
+			node* next;
+			for (next = cur->next; next != first; cur = next, next = cur->next);
+			while (next)
+			{
+				cur->next = next->next;
+				delete_node(next);
+				next = cur->next;
+				--num_elements;
+			}
+		}
+	}
+
+
+	template <class V, class K, class HF, class Ex, class Eq, class A>
+	void hashtable<V, K, HF, Ex, Eq, A>::erase_bucket(const size_type n, node* last)
+	{
+		node * cur;
+		while (cur!=last)
+		{
+			node* next = cur->next;
+			delete_node(cur);
+			cur = next;
+			buckets[n] = cur;
+			--num_elements;
+		}
+	}
+
+
+	template <class V, class K, class HF, class Ex, class Eq, class A>
+	void hashtable<V, K, HF, Ex, Eq, A>::erase(iterator first, iterator last)
+	{
+		size_type f_bucket = first.cur ? bkt_num(first.cur->val) : buckets.size();
+		size_type l_bucket = last.cur ? bkt_num(first.cur->val) : buckets.size();
+
+
+		if (first.cur == last.cur)
+		{
+			return;
+		}
+		else if (f_bucket == l_bucket)
+		{
+	
+			erase_bucket(f_bucket, l_bucket);
+		}
+		else
+		{
+			erase_bucket(f_bucket, first->cur, 0);
+			for (size_type n = f_bucket + 1; n < l_bucket; ++n)
+			{
+				erase_bucket(n, 0);
+			}
+
+			if (l_bucket != buckets())
+			{
+				erase_bucket(l_bucket, last.cur);
+			}
+		
+		}
+
+	}
+
+	template <class V, class K, class HF, class Ex, class Eq, class A>
+	void hashtable<V, K, HF, Ex, Eq, A>::erase(const const_iterator& it)
+	{
+
+		erase(iterator(const_cast<node*>(it.cur),
+			const_cast<hashtable*>it.ht));
+
+	}
+
+
+	template <class V, class K, class HF, class Ex, class Eq, class A>
+	void hashtable<V, K, HF, Ex, Eq, A>::erase(const_iterator first, const_iterator last)
+	{
+		erase(iterator(const_cast<node*>(first.cur), const_cast<hashtable*>first.ht),
+			iterator(const_cast<node*>(last.cur), const_cast<hashtable*>(last.ht)));
+
+	}
+
+
+	template <class V, class K, class HF, class Ex, class Eq, class A>
+	typename hashtable<V, K, HF, Ex, Eq, A>::size_type 
+		hashtable<V, K, HF, Ex, Eq, A>::erase(const key_type& key) const
+	{
+		const size_type n = bkt_num_key(key);
+		node* first = buckets[n];
+		size_type erased = 0;
+
+		if (first)
+		{
+			node* cur = first;
+			node* next = cur->next;
+			while (next)
+			{
+				if (equals(get_key(next->val), key))
+				{
+					cur->next = next->next;
+					delete_node(next);
+					next = cur->next;
+					++erased;
+					--num_elements;
+				}
+				else
+				{
+					cur = next;
+					next = cur->next;
+				}
+			}
+		}
+
+		if (equals(get_key(first->val), key))
+		{ 
+			buckets[n] = first->next;
+			delete_node(first);
+			++erased;
+			--num_elements;
+		}
+
+		return erased;
+	}
+
 
 	template <class V, class K, class HF, class Ex, class Eq, class A>
 	void hashtable<V, K, HF, Ex, Eq, A>::copy_from(const hashtable& ht)

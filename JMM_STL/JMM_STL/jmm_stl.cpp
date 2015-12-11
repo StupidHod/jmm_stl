@@ -16,6 +16,8 @@
 #include "jmm_stl_map.h"
 #include "jmm_stl_hashtable.h"
 #include "jmm_stl_hash_fun.h"
+#include "jmm_stl_hash_set.h"
+#include <cstring>
 
 using namespace JMM_STL;
 
@@ -272,6 +274,42 @@ void test_hashtable()
 }
 
 
+struct  eqstr
+{
+	bool operator()(const char* s1, const char* s2) const
+	{
+		return strcmp(s1, s2) == 0;
+	}
+};
+
+void lookup(const hash_set<const char*, hash<const char*>, eqstr>& Set,
+	const char* word)
+{
+	hash_set<const char*, hash<const char*>, eqstr>::const_iterator it
+		=Set.find(word);
+
+	std::cout << "\t" << word << ":"
+		<< (it !=  Set.end() ? "present" : "not present")
+		<< std::endl;
+}
+
+void test_hash_set()
+{
+	hash_set<const char*, hash<const char*>, eqstr> Set;
+	Set.insert("kiwi");
+	Set.insert("plum");
+	Set.insert("apple");
+	Set.insert("mango");
+	Set.insert("apricot");
+	Set.insert("banana");
+
+	lookup(Set, "mango");
+	lookup(Set, "apple");
+	lookup(Set, "durian");
+
+	outputIterator(Set.begin(), Set.end());
+}
+
 int main()
 {
 	int wait;
@@ -282,7 +320,8 @@ int main()
 	//test_rb_tree();
 	//test_set();
 	//test_map();
-	test_hashtable();
+	//test_hashtable();
+	test_hash_set();
 
 	std::cin >> wait;
 }
