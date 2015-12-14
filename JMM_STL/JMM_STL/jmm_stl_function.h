@@ -59,6 +59,38 @@ namespace JMM_STL
 		}
 
 	};
+
+
+	template<class T>
+	struct plus :public binary_function < T, T, T >
+	{
+		T operator()(const T& x, const T& y) const
+		{
+			return x + y;
+		}
+	};
+
+	template<class T>
+	struct multiplies :public binary_function < T, T, T >
+	{
+		T operator()(const T& x, const T& y) const
+		{
+			return x*y;
+		}
+	};
+
+	template<class T> 
+	inline T identity_element(plus<T>)
+	{
+		return T(0);
+	}
+
+
+	template<class T>
+	inline T identity_element(multiplies<T>)
+	{
+		return T(1);
+	}
 }
 
 #endif

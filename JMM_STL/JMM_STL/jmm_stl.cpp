@@ -18,6 +18,8 @@
 #include "jmm_stl_hash_fun.h"
 #include "jmm_stl_hash_set.h"
 #include <cstring>
+#include "jmm_stl_hash_map.h"
+#include "jmm_stl_numeric.h"
 
 using namespace JMM_STL;
 
@@ -310,6 +312,41 @@ void test_hash_set()
 	outputIterator(Set.begin(), Set.end());
 }
 
+void test_hash_map()
+{
+	hash_map<const char*, int, hash<const char*>, eqstr> days;
+	days["january"] = 31;
+	days["february"] = 28;
+	days["march"] = 31;
+	days["april"] = 30;
+	days["may"] = 31;
+	days["june"] = 30;
+	days["july"] = 31;
+	days["august"] = 31;
+	days["september"] = 30;
+	days["october"] = 31;
+	days["november"] = 30;
+	days["december"] = 31;
+
+
+	std::cout << "september\t-> " << days["september"] << std::endl;
+	std::cout << "june\t-> " << days["june"] << std::endl;
+	std::cout << "february\t-> " << days["february"] << std::endl;
+	std::cout << "december\t-> " << days["december"] << std::endl;
+
+	for (auto first = days.begin(); first != days.end(); ++first)
+	{
+		std::cout << first->first << "\t";
+	}
+}
+
+void test_numeric()
+{
+	std::cout << "2^10 = " << JMM_STL::power(2, 10) << std::endl;
+
+
+}
+
 int main()
 {
 	int wait;
@@ -321,7 +358,10 @@ int main()
 	//test_set();
 	//test_map();
 	//test_hashtable();
-	test_hash_set();
+	//test_hash_set();
+	//test_hash_map();
+
+	test_numeric();
 
 	std::cin >> wait;
 }

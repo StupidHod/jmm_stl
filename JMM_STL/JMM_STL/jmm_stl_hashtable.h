@@ -404,8 +404,6 @@ namespace JMM_STL
 			return iterator(first, this);
 		}
 
-		pair<iterator, iterator> equal_range(const key_type&);
-
 		const_iterator find(const key_type& key) const
 		{
 			size_type n = bkt_num_key(key);
@@ -413,6 +411,14 @@ namespace JMM_STL
 			for (first = buckets[n]; first&&!equals(get_key(first->val), key); first = first->next){}
 			return const_iterator(first, this);
 		}
+
+
+		reference find_or_insert(const value_type& obj);
+
+
+		pair<iterator, iterator> equal_range(const key_type&);
+
+
 
 		size_type count(const key_type& key) const
 		{
@@ -644,6 +650,29 @@ namespace JMM_STL
 		buckets[n] = tmp;
 		++num_elements;
 		return iterator(tmp, this);
+	}
+
+	template <class V, class K, class HF, class Ex, class Eq, class A>
+	typename hashtable<V, K, HF, Ex, Eq, A>::reference
+		hashtable<V, K, HF, Ex, Eq, A>::find_or_insert(const value_type& obj)
+	{
+		resize(num_elements + 1);
+
+		size_type n = bkt_num(obj);
+		node* first = buckets[n];
+		for (node* cur = first; cur; cur->next)
+		{
+			if (equals(get_key(cur->val), get_key(obj)))
+			{
+				return cur->val;
+			}
+		}
+
+		node * tmp = new_node(obj);
+		tmp->next = first;
+		buckets[n] = tmp;
+		++num_elements;
+		return tmp->val;
 	}
 
 	template <class V, class K, class HF, class Ex, class Eq, class A>
