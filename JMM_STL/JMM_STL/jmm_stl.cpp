@@ -20,6 +20,7 @@
 #include <cstring>
 #include "jmm_stl_hash_map.h"
 #include "jmm_stl_numeric.h"
+#include "jmm_stl_algo.h"
 
 using namespace JMM_STL;
 
@@ -347,6 +348,17 @@ void test_numeric()
 
 }
 
+void test_algo()
+{
+	int ia[] = { 1, 2, 3, 4, 5, 6, 7 };
+
+	outputIterator(ia, ia + 7);
+
+	rotate(ia, ia + 2, ia + 7);
+
+	outputIterator(ia, ia + 7);
+}
+
 int main()
 {
 	int wait;
@@ -361,7 +373,9 @@ int main()
 	//test_hash_set();
 	//test_hash_map();
 
-	test_numeric();
+	//test_numeric();
+
+	test_algo();
 
 	std::cin >> wait;
 }

@@ -155,42 +155,18 @@ namespace JMM_STL
 		lexicographical_compare(const unsigned char* first1, const unsigned char* last1,
 		const unsigned char* first2, const unsigned char* last2)
 	{
-	
+
 		const size_t len1 = last1 - first1;
 		const size_t len2 = last2 - first2;
 
-		const int result = memcmp((void*)first1, first2, min(len1,len2));
+		const int result = memcmp((void*)first1, first2, min(len1, len2));
 
 		return result != 0 ? result < 0 : len1 < len2;
-	
-	
+
+
 	}
 
-	template<class InputIterator1, class InputIterator2>
-	pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator2 last1,
-		InputIterator2 first2, InputIterator last2)
-	{
-		while (first1!=last1&&*first1 == *first2)
-		{
-			++first1;
-			++first2;
-		}
 
-		return pair<InputIterator1, InputIterator2>(first1, first2);
-	}
-
-	template<class InputIterator1, class InputIterator2, class BinaryPredicate>
-	pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator2 last1,
-		InputIterator2 first2, InputIterator last2, BinaryPredicate binary_pred)
-	{
-		while (first1 != last1&&binary_pred(*first1, *first2))
-		{
-			++first1;
-			++first2;
-		}
-
-		return pair<InputIterator1, InputIterator2>(first1, first2);
-	}
 
 	template <class T, class Compare>
 	inline const T& min(const T& a, const T& b, Compare compare)
