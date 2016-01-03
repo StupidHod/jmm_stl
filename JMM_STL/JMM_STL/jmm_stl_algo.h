@@ -3,6 +3,7 @@
 
 #include "jmm_stl_iterator.h"
 #include "jmm_stl_heap.h"
+#include <stddef.h>
 
 
 namespace JMM_STL
@@ -170,7 +171,7 @@ namespace JMM_STL
 		Distance len = 0;
 		distance(first, last, len);
 		Distance half;
-		middle;
+		RandomIterator middle;
 		while (len > 0)
 		{
 			half = len >> 1;
@@ -499,10 +500,10 @@ namespace JMM_STL
 			return last;
 		}
 
-		ForwardIterator next;
+		ForwardIterator next=first;
 		while (++next != last)
 		{
-			if (*next == first)
+			if (*next == *first)
 			{
 				return first;
 			}
@@ -523,10 +524,10 @@ namespace JMM_STL
 			return last;
 		}
 
-		ForwardIterator next;
+		ForwardIterator next=first;
 		while (++next != last)
 		{
-			if (binary_pred(*next, first))
+			if (binary_pred(*next, *first))
 			{
 				return first;
 			}
@@ -596,7 +597,7 @@ namespace JMM_STL
 	ForwardIterator1 __search(ForwardIterator1 first1, ForwardIterator1 last1,
 		ForwardIterator2 first2, ForwardIterator2 last2, Distance1*, Distance2*)
 	{
-		Distance d1 = 0;
+		Distance1 d1 = 0;
 		distance(first1, last1, d1);
 		Distance2 d2 = 0;
 		distance(first2, last2, d2);
@@ -616,11 +617,18 @@ namespace JMM_STL
 				++current1;
 				++current2;
 			}
-			else
-			{
-				current1 == ++first1;
-				current2 = first2;
-				--d1;
+			else{
+
+				if (d1 == d2)
+				{
+					return last1;
+				}
+				else
+				{
+					current1 = ++first1;
+					current2 = first2;
+					--d1;
+				}
 			}
 
 		}
@@ -798,7 +806,7 @@ namespace JMM_STL
 	{
 		typedef typename iterator_traits<ForwardIterator1>::iterator_category category1;
 		typedef typename iterator_traits<ForwardIterator2>::iterator_category category2;
-		__find_end(first1, last1, first2, last2, category1(), category2());
+		return __find_end(first1, last1, first2, last2, category1(), category2());
 	}
 
 	template<class ForwardIterator1, class ForwardIterator2>
@@ -807,7 +815,7 @@ namespace JMM_STL
 	{
 		for (; first1 != last1; ++first1)
 		{
-			for (ForwardIterator1 iter = first1; iter != last2; ++iter)
+			for (ForwardIterator1 iter = first2; iter != last2; ++iter)
 			{
 				if (*first1 == *iter)
 				{
@@ -1302,6 +1310,340 @@ namespace JMM_STL
 	{
 		__rotate(first, middle, last, distance_type(first), iterator_category(first));
 	}
+
+
+	template<class ForwardIterator, class OutputIterator>
+	OutputIterator rotate_copy(ForwardIterator first, ForwardIterator middle,
+		ForwardIterator last, OutputIterator result)
+	{
+		return copy(first, middle, copy(middle, last, result));
+	}
+
+
+		
+	template<class ForwardIterator1, class ForwardIterator2>
+	ForwardIterator2 swap_range(ForwardIterator1 first1, ForwardIterator1 last1,
+		ForwardIterator2 first2)
+	{
+		for (; first1 != last1; ++first1, ++first2)
+		{
+			iter_swap(first1, first2);
+		}
+
+		return first2;
+	}
+
+
+	template<class InputIterator, class OutputIterator, class UnaryOperation>
+	OutputIterator transform(InputIterator first, InputIterator last, OutputIterator result,
+		UnaryOperation op)
+	{
+		for (; first != last; ++first, ++result)
+		{
+			*result = op(*first);
+		}
+
+		return result;
+	}
+
+
+	template<class InputIterator1, class InputIterator2, class OutputIterator, class BinaryOperation>
+	OutputIterator transform(InputIterator1 first1, InputIterator1 last1,
+		InputIterator2 first2, OutputIterator result, BinaryOperation binary_op)
+	{
+		for (; first1 != last1; ++first1, ++first2, ++result)
+		{
+			*result = binary_op(*first1, *first2);
+		}
+
+		return result;
+
+	}
+
+
+	template<class InputIterator, class ForwardIterator>
+	ForwardIterator __unique_copy(InputIterator first, InputIterator last,
+		ForwardIterator result, forward_iterator_tag)
+	{
+		*result = *first;
+		while (++first!=last)
+		{
+			if (*result != last)
+			{
+				*++result = *first;
+			}
+		}
+		return ++result;
+	}
+
+
+	template<class InputIterator, class OutputIterator, class T>
+	OutputIterator __unique_copy(InputIterator first, InputIterator last, OutputIterator result,
+		T*)
+	{
+		T value = *first;
+		*result = value;
+		while (++first!=last)
+		{
+			if (value != *first)
+			{
+				value = *first;
+				*++result = value;
+			}
+		}
+	}
+
+	template<class InputIterator,class OutputIterator>
+	inline OutputIterator __unique_copy(InputIterator first, InputIterator last,
+		OutputIterator result, output_iterator_tag)
+	{
+		return __unique_copy(first, last, result, value_type(first));
+	}
+
+	template<class InputIterator, class OutputIterator>
+	inline OutputIterator unique_copy(InputIterator first, InputIterator last, OutputIterator result)
+	{
+		if (first == last)
+		{
+			return result;
+		}
+
+		return __unique_copy(first, last, result, iterator_category(first));
+
+	}
+
+
+	template<class ForwardIterator>
+	ForwardIterator unique(ForwardIterator first, ForwardIterator last)
+	{
+		first = adjacent_find(first, last);
+		return __unique_copy(first, last, first);
+	}
+
+
+	template<class ForwardIterator, class T>
+	bool binary_search(ForwardIterator first, ForwardIterator last, const T& value)
+	{
+		ForwardIterator i = lower_bound(first, last, value);
+		return i != last&&!(value < *i);
+	}
+
+
+	template<class ForwardIterator, class T, class Compare>
+	bool binary_search(ForwardIterator first, ForwardIterator last, const T& value,
+		Compare comp)
+	{
+		ForwardIterator i = lower_bound(first, last, value, comp);
+		return i != last&&!comp(value, *i);
+	}
+
+	template<class BidirectionalIterator>
+	bool next_premutation(BidirectionalIterator first, BidirectionalIterator last)
+	{
+		if (first == last)
+		{
+			return false;
+		}
+
+		BidirectionalIterator i = first;
+		++i;
+		if (i == last)
+		{
+			return false;
+		}
+		i = last;
+		--i;
+
+		for (;;)
+		{
+			BidirectionalIterator ii = i;
+			--i;
+			if (*i < *ii)
+			{
+				BidirectionalIterator j = last;
+				while (!(*i<*--j))
+				{
+
+				}
+				iter_swap(i, j);
+				reverse(ii, last);
+				return true;
+			}
+			if (i == first)
+			{
+				reverse(first, last);
+				return false;
+			}
+
+		}
+	}
+
+	template<class BidirectionalIterator, class Compare>
+	bool next_premutation(BidirectionalIterator first, BidirectionalIterator last,
+		Compare comp)
+	{
+		if (first == last)
+		{
+			return false;
+		}
+
+		BidirectionalIterator i = first;
+		++i;
+		if (i == last)
+		{
+			return false;
+		}
+		i = last;
+		--i;
+
+		for (;;)
+		{
+			BidirectionalIterator ii = i;
+			--i;
+			if (comp(*i , *ii))
+			{
+				BidirectionalIterator j = last;
+				while (!comp(*i,*--j))
+				{
+
+				}
+				iter_swap(i, j);
+				reverse(ii, last);
+				return true;
+			}
+			if (i == first)
+			{
+				reverse(first, last);
+				return false;
+			}
+
+		}
+	}
+
+
+	template<class BidirectionalIterator>
+	bool prev_permutation(BidirectionalIterator first, BidirectionalIterator last)
+	{
+		if (first == last)
+		{
+			return false;
+		}
+		BidirectionalIterator i = first;
+		++i;
+		if (i == last)
+		{
+			return false;
+		}
+
+		i = last;
+		--i;
+		for (;;)
+		{
+			BidirectionalIterator ii = i;
+			--i;
+			if (*ii < i)
+			{
+				BidirectionalIterator j = last;
+				while (*--j<*i)
+				{
+
+				}
+				iter_swap(i, j);
+				reverse(ii, last);
+				return true;
+
+			}
+
+			if (i == first)
+			{
+				reverse(first, last);
+				return false;
+			}
+		}
+	}
+
+	template<class BidirectionalIterator, class Compare>
+	bool prev_permutation(BidirectionalIterator first, BidirectionalIterator last,
+		Compare comp)
+	{
+		if (first == last)
+		{
+			return false;
+		}
+		BidirectionalIterator i = first;
+		++i;
+		if (i == last)
+		{
+			return false;
+		}
+
+		i = last;
+		--i;
+		for (;;)
+		{
+			BidirectionalIterator ii = i;
+			--i;
+			if (comp(*ii, i))
+			{
+				BidirectionalIterator j = last;
+				while (comp(*--j, *i));
+				iter_swap(i, j);
+				reverse(ii, last);
+				return true;
+
+			}
+
+			if (i == first)
+			{
+				reverse(first, last);
+				return false;
+			}
+		}
+	}
+
+	template<class RandomAccessIterator, class Distance>
+	void __random_shuffle(RandomAccessIterator first, RandomAccessIterator last, Distance*)
+	{
+		if (first == last)
+		{
+			return;
+		}
+
+		for (RandomAccessIterator i = first + 1; != last; ++i)
+		{
+			iter_swap(i, first + Distance(rand() % ((i - first) + 1)));
+		}
+
+	}
+
+
+
+	template<class RandomAccessIterator>
+	inline void random_shuffle(RandomAccessIterator first, RandomAccessIterator last)
+	{
+		__random_shuffle(first, last, distance_type(first));
+	}
+
+
+	template<class RandomAccessIterator, class RandomNumberGenerator>
+	void random_shuffle(RandomAccessIterator first, RandomAccessIterator last,
+		RandomNumberGenerator& rand)
+	{
+		if (first == last)
+		{
+			return;
+		}
+
+		for (RandomAccessIterator i = first + 1; i != last; ++i)
+		{
+			iter_swap(i, first + rand((i - first) + 1));
+		}
+	}
+
+
+	template<class RandomAccessIterator>
+	inline void partoa;
+
 }
 
 

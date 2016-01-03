@@ -348,15 +348,94 @@ void test_numeric()
 
 }
 
-void test_algo()
+
+template<class T>
+struct display
 {
-	int ia[] = { 1, 2, 3, 4, 5, 6, 7 };
+	void operator()(const T& x) const
+	{
+		std::cout << x << "\t";
+	}
+};
 
-	outputIterator(ia, ia + 7);
 
-	rotate(ia, ia + 2, ia + 7);
+struct even
+{
+	bool operator()(int x) const
+	{
+		return x % 2 ? false : true;
+	}
 
-	outputIterator(ia, ia + 7);
+};
+
+struct even_by_two
+{
+public:
+	int operator()()const
+	{
+		return _x += 2;
+	}
+private:
+	static int _x;
+};
+
+int even_by_two::_x = 0;
+
+
+void test_algo_1()
+{
+	int ia[] = { 0,1, 2, 3, 4, 5, 6,6,6, 7 ,8 };
+
+	vector<int> iv(ia, ia + sizeof(ia) / sizeof(int));
+	std::cout << *adjacent_find(iv.begin(), iv.end()) << std::endl;
+	std::cout << *adjacent_find(iv.begin(), iv.end(), equal_to<int>()) << std::endl;
+
+	std::cout << count(iv.begin(), iv.end(),6) << std::endl;
+
+	std::cout << count_if(iv.begin(), iv.end(), bind2nd(less<int>(),7)) << std::endl;
+
+	std::cout << *find(iv.begin(), iv.end(), 4) << std::endl;
+
+	std::cout << *find_if(iv.begin(), iv.end(), bind2nd(greater<int>(), 2)) << std::endl;
+
+	vector<int> iv2(ia + 6, ia + 8);
+	outputIterator(iv2.begin(), iv2.end());
+	outputIterator(iv.begin(), iv.end());
+	std::cout << *(find_end(iv.begin(), iv.end(), iv2.begin(),iv2.end())+3) << std::endl;
+	std::cout << *(find_first_of(iv.begin(), iv.end(), iv2.begin(), iv2.end()) + 3) << std::endl;
+	
+
+	for_each(iv.begin(), iv.end(), display<int>());
+	std::cout << std::endl;
+	generate(iv2.begin(), iv2.end(), even_by_two());
+	for_each(iv2.begin(), iv2.end(), display<int>());
+	std::cout << std::endl;
+
+
+	generate_n(iv.begin(), 3, even_by_two());
+	for_each(iv.begin(), iv.end(), display<int>());
+	std::cout << std::endl;
+
+
+}
+
+
+
+
+
+
+void test_algo_2()
+{
+	int ia[] = { 12, 17, 20, 22, 23, 30, 33, 40 };
+	vector<int> iv(ia, ia + sizeof(ia) / sizeof(int));
+
+
+	std::cout << *lower_bound(iv.begin(), iv.end(), 21) << std::endl;
+	std::cout << *upper_bound(iv.begin(), iv.end(), 21) << std::endl;
+	std::cout << *lower_bound(iv.begin(), iv.end(), 22) << std::endl;
+	std::cout << *upper_bound(iv.begin(), iv.end(), 22) << std::endl;
+
+
 }
 
 int main()
@@ -375,7 +454,8 @@ int main()
 
 	//test_numeric();
 
-	test_algo();
+	test_algo_1();
+	//test_algo_2();
 
 	std::cin >> wait;
 }
