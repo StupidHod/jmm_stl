@@ -438,6 +438,73 @@ void test_algo_2()
 
 }
 
+void test_algo_3()
+{
+	int ia[] = { 12, 17, 20, 22, 23, 30, 33, 40 };
+	vector<int> iv(ia, ia + sizeof(ia) / sizeof(int));
+
+	std::cout << *lower_bound(iv.begin(), iv.end(), 21) << std::endl;
+
+	std::cout << *upper_bound(iv.begin(), iv.end(), 21) << std::endl;
+
+	std::cout << *lower_bound(iv.begin(), iv.end(), 22) << std::endl;
+
+	std::cout << *upper_bound(iv.begin(), iv.end(), 22) << std::endl;
+
+
+	std::cout << binary_search(iv.begin(), iv.end(), 33) << std::endl;
+
+	std::cout << binary_search(iv.begin(), iv.end(), 34) << std::endl;
+
+	//reverse(iv.begin(), iv.end());
+	//outputIterator(iv.begin(), iv.end());
+
+	next_premutation(iv.begin(), iv.end());
+	outputIterator(iv.begin(), iv.end());
+	
+
+	prev_permutation(iv.begin(), iv.end());
+	outputIterator(iv.begin(), iv.end());
+
+	random_shuffle(iv.begin(), iv.end());
+	outputIterator(iv.begin(), iv.end());
+
+
+	partial_sort(iv.begin(), iv.begin() + 4, iv.end());
+	outputIterator(iv.begin(), iv.end());
+
+
+	sort(iv.begin(), iv.end());
+	outputIterator(iv.begin(), iv.end());
+
+	pair<vector<int>::iterator, vector<int>::iterator> pairIte;
+	pairIte = equal_range(iv.begin(), iv.end(), 22);
+	std::cout << *pairIte.first << std::endl;
+	std::cout << *pairIte.second << std::endl;
+
+
+	pairIte = equal_range(iv.begin(), iv.end(), 25);
+	std::cout << *pairIte.first << std::endl;
+	std::cout << *pairIte.second << std::endl;
+
+
+	random_shuffle(iv.begin(), iv.end());
+	outputIterator(iv.begin(), iv.end());
+
+	nth_element(iv.begin(), iv.begin() + 5, iv.end());
+	outputIterator(iv.begin(), iv.end());
+
+
+}
+
+void test_adaptable()
+{
+	greater<int> ig;
+
+	std::cout << std::boolalpha<< ig(4, 6) << std::endl;
+	std::cout << greater<int>()(6, 4) << std::endl;
+}
+
 int main()
 {
 	int wait;
@@ -454,8 +521,10 @@ int main()
 
 	//test_numeric();
 
-	test_algo_1();
+	//test_algo_3();
 	//test_algo_2();
+
+	test_adaptable();
 
 	std::cin >> wait;
 }
